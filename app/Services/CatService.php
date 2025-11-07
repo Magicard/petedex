@@ -17,13 +17,12 @@ class CatService
      */
     public function __construct(?Client $client= null)
     {
-        //Chose passed in client other make a new one
-        $this->client= $client ?? new Client([
+        $this->client = new Client([
             'base_uri' => config('services.cat-api.url'),
             'headers' => [
-                'x-api-key' => config('services.cat-api.key')
-                ],
-            ]);
+                'x-api-key' => config('services.cat-api.key'),
+            ],
+        ]);
     }
 
     /**
@@ -33,17 +32,16 @@ class CatService
      */
     public function allBreeds(): array
     {
-        return Cache::remember('cat_breeds', 1800, function (){
+        return Cache::remember('cat_breeds', 1800, function () {
             try {
                 $response = $this->client->get('breeds');
-                return $this->decodeResponse($response);
-
-
-            } catch (Throwable $error){
+                return json_decode((string) $response->getBody(), true) ?? [];
+            } catch (RequestException $e) {
                 return [];
             }
         });
     }
+
 
     /**
      * Find a specific breed by its ID from The Cat API.
