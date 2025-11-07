@@ -32,6 +32,7 @@ class CatService
             try {
                 $response = $this->client->get('breeds');
                 return json_decode((string) $response->getBody(), true) ?? [];
+
             } catch (RequestException $e) {
                 return [];
             }
@@ -49,7 +50,6 @@ class CatService
                 $response = $this->client->get("images/search", [
                     'query' => ['breed_ids' => $breedId],
                 ]);
-
                 return collect($this->decodeResponse($response))->first();
 
             } catch (Throwable $error){
